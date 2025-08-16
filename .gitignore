@@ -3,3 +3,4 @@ build/
 *.pyc
 op25/gr-op25_repeater/apps/html/*
 nohup.out
+op25/gr-op25_repeater/www/images/*
