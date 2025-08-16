@@ -1,4 +1,7 @@
-# This is the boatbod fork of op25.  
+# This is the amialoni fork of boatbod fork of op25.  
+
+Basicly it is the same as boatbod, i just added the option to hear the audio over the net as u can see in the next picture
+
 
 Capabilities are broadly categorized into two lists - those supported by the legacy `rx.py` version of the app and those by the newer `multi_rx.py` version.  I recommend using `multi_rx.py` where at all possible as this is the focus of future development.
 
