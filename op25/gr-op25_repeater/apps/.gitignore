@@ -3,13 +3,13 @@ stderr*
 *.2
 *.blist
 *.wlist
-*.json
 *.tsv
-*.sh
 *.txt
 *.liq
 *.bin
 op25_python
+op25/gr-op25_repeater/apps/html/*
+
 
 # Tracked files that would otherwise be excluded
 !op25.sh

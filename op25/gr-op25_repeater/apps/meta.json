@@ -1,10 +1,8 @@
 {
-    "icecastPass": "password",
-    "icecastMountpoint": "mountpoint",
-    "icecastServerAddress": "server.name:port",
-    "delay": "0.0", "icecastMountExt": ".m3u",
-    "meta_format_idle": "[idle]",
-    "meta_format_tgid": "[%TGID%]",
-    "meta_format_tag":  "[%TGID%] %TAG%",
-    "meta_format_rid":  "@ [%RID%]"
+  "icecastServerAddress": "192.168.1.8",
+  "icecastPort": 8000,
+  "icecastPass": "hackme",
+  "icecastMountpoint": "op25",
+  "icecastMountExt": ".mp3",
+  "delay": 0.0
 }
