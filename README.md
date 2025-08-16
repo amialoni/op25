@@ -3,6 +3,13 @@
 Basicly it is the same as boatbod, i just added the option to hear the audio over the net as u can see in the next picture
 ![Example Image](op25-ami.png)
 
+This small change is achived after installing it all, you start the op25 by running the ~op25/op25/gr-op25_repeater/apps/run.sh
+You need to configure the rx.py parameters in the run.sh file.
+The run.sh is starting a small http server and runing a ffmpeg command to produse the audio server.
+
+Have fun.
+
+
 Capabilities are broadly categorized into two lists - those supported by the legacy `rx.py` version of the app and those by the newer `multi_rx.py` version.  I recommend using `multi_rx.py` where at all possible as this is the focus of future development.
 
 ## `rx.py` capabilities
