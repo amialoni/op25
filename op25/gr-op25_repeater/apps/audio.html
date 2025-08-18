@@ -10,7 +10,7 @@
   </style>
 </head>
 <body>
-  <audio id="player" controls ></audio>
+  <audio id="player" controls></audio>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
     const audio = document.getElementById('player');
@@ -25,11 +25,18 @@
     }
 
     if (Hls.isSupported()) {
-      const hls = new Hls({
-        liveSyncDurationCount: 3,
-        liveMaxLatencyDurationCount: 50,
-        debug: true,
-      });
+  const hls = new Hls({
+  maxBufferLength: 90,          // seconds of buffer to maintain (higher than default)
+  maxMaxBufferLength: 120,      // max buffer length allowed
+  maxBufferSize: 100 * 1000 * 1000, // max buffer size bytes (~100MB)
+  maxBufferHole: 1,             // allow 1 second gap tolerance before seeking
+  liveSyncDurationCount: 3,
+  liveMaxLatencyDurationCount: 50,
+  enableWorker: true,
+  debug: true,
+});
+      let lastSegmentCount = 0;
+      let stallTimeout = null;
 
       hls.loadSource(audioSrc);
       hls.attachMedia(audio);
@@ -39,10 +46,41 @@
         tryPlay();
       });
 
+      hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
+        let currentSegmentCount = data.fragments.length;
+
+        if (currentSegmentCount === lastSegmentCount) {
+          // no new segments
+          if (!audio.paused && !stallTimeout) {
+            console.log('No new segments detected, will pause playback if stall persists.');
+            // Delay pausing slightly to avoid premature pause
+            stallTimeout = setTimeout(() => {
+              if (!audio.paused) {
+                console.log('Pausing playback due to buffer stall and no new segments...');
+                audio.pause();
+              }
+              stallTimeout = null;
+            }, 2000); // 2 seconds grace period
+          }
+        } else {
+          // new segments arrived, clear stall timeout and resume
+          if (stallTimeout) {
+            clearTimeout(stallTimeout);
+            stallTimeout = null;
+          }
+          if (audio.paused) {
+            console.log('New segments detected, resuming playback...');
+            tryPlay();
+          }
+        }
+        lastSegmentCount = currentSegmentCount;
+      });
+
       hls.on(Hls.Events.ERROR, (event, data) => {
         console.error('HLS error:', data);
         if (data.type === 'mediaError' && data.details === 'bufferStalledError') {
-          audio.currentTime += 0.5;
+          // Handle buffer stalled error gracefully by not nudging playback
+          console.log('Detected buffer stalled error, handling gracefully.');
         }
       });
 
