@@ -20,9 +20,9 @@ RTL_DEV="rtl=1"
 # nohup 
 ./rx.py --nocrypt \
     --args "$RTL_DEV" \
-    --gains "lna:32" \
+    --gains "lna:37" \
     -S 1000000 \
-    -q 19  \
+    -q 18  \
     -d 0 -v 1 -2 -f 867.475e6 \
     -X -V -w \
     -l http:0.0.0.0:8080 &
@@ -42,11 +42,17 @@ sudo python3 -m http.server 81 &
 # -f hls -hls_time 5 -hls_list_size 52 -hls_flags delete_segments+append_list \
 #  html/op25.m3u8 &
 
- ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
+#  ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
+# -f lavfi -t 3600 -i aevalsrc=0::duration=3600:sample_rate=8000 \
+# -filter_complex "[0:a][1:a]amix=inputs=2:dropout_transition=9999" \
+# -c:a aac -b:a 64k \
+# -f hls -hls_time 5 -hls_list_size 0 -hls_flags append_list+omit_endlist \
+# html/op25.m3u8 &
+
+ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
 -f lavfi -t 3600 -i aevalsrc=0::duration=3600:sample_rate=8000 \
 -filter_complex "[0:a][1:a]amix=inputs=2:dropout_transition=9999" \
--c:a aac -b:a 64k \
--f hls -hls_time 5 -hls_list_size 0 -hls_flags append_list+omit_endlist \
-html/op25.m3u8 &
+-c:a libmp3lame -b:a 64k \
+-f segment -segment_time 1740 output_%03d.mp3 &
 
 

@@ -203,32 +203,38 @@
 	<img src="1x1.png" id="img5" style="display:none;" alt="plot"><br>
 </div>
 <style>
-	.bottom-div {
-	  position: fixed;   /* stays fixed at the bottom */
-	  bottom: 0;         /* align to bottom */
-	  left: 0;
-	  width: 100%;       /* full width */
-	  background-color: white;
-	  text-align: center;
-	  padding: 0px;
-	  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-	  height: 54px;
-	}
-	.line {
-	  border-top: 2px solid black; /* the line inside */
-	  width: 100%;
-	  height: 54px;
-	}
-	</style>
-	</head>
-	<body>
-	
-	<div class="bottom-div">
-	  <div class="line">
-	   <iframe style="width:100%" src="/audio.html"></iframe>
-	  </div>
-	</div>
-	
-<br>
+.bottom-div {
+  position: fixed;   /* stays fixed at the bottom */
+  bottom: 0;         /* align to bottom */
+  left: 0;
+  width: 100%;       /* full width */
+  background-color: white;
+  text-align: center;
+  padding: 0px;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+  height: 54px;
+}
+.line {
+  border-top: 2px solid black; /* the line inside */
+  width: 100%;
+  height: 54px;
+}
+</style>
+</head>
+<body>
+
+<div class="bottom-div">
+  <div class="line">
+    <iframe id="myIframe" style="width:100%" src=""></iframe>
+  </div>
+</div>
+
+<script>
+  const protocol = window.location.protocol;
+  const domain = window.location.hostname;
+  const newPort = "8081";
+  const iframeSrc = `${protocol}//${domain}:${newPort}/audio.html`;
+  document.getElementById("myIframe").src = iframeSrc;
+</script>
 </body>
 </html>
