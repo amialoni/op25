@@ -9,6 +9,7 @@ stderr*
 *.bin
 op25_python
 op25/gr-op25_repeater/apps/html/*
+html
 
 
 # Tracked files that would otherwise be excluded
