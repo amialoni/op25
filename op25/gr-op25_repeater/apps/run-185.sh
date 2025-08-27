@@ -12,23 +12,25 @@ if [[ "$1" == "-s" ]]; then
     echo "Stopped OP25 and FFmpeg."
     exit 0
 fi
-
 RTL_DEV="rtl=0"
+RTL_FRQ="867.475e6"
+RTL_PPM="-3"
+RTL_GAIN="30"
 
 # Start OP25 receiver
-nohup ./rx.py --nocrypt \
+set -x
+./rx.py --nocrypt \
     --args "$RTL_DEV" \
-    --gains "lna:25" \
+    --gains "lna:$RTL_GAIN" \
     -S 2400000 \
-    -q -3 -o 500 \
-    -d 0 -v 1 -2 -f 867.475e6 \
+    -q "$RTL_PPM" -o 500 \
+    -d 0 -v 1 -2 -f "$RTL_FRQ" \
     -X -V -w \
     -l http:0.0.0.0:8080 &
-
-sleep 5
+set +x
+sleep 1
 
 # Stream to browser via HLS
-mkdir -p  /srv/www/myradio.tovmeod.com/op25
 mkdir -p  html
 sudo python3 -m http.server 8081 &
 #ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
