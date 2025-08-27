@@ -13,7 +13,7 @@ if [[ "$1" == "-s" ]]; then
     exit 0
 fi
 
-RTL_DEV="rtl=1"
+RTL_DEV="rtl=0"
 # -o 500
 # Start OP25 receiver
 
