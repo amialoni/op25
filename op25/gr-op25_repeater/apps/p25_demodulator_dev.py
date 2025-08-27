@@ -46,7 +46,12 @@ import op25_c4fm_mod
 
 # Check for gnuradio digital.fll_band_edge_cc() thread safety
 # fix was committed just a few days after v3.10.9.2 was released
-if Version(gr.version()) > Version("3.10.9.2"):
+import re
+ver_clean = re.sub(r"[^0-9.]", "", gr.version())
+if Version(ver_clean) > Version("3.10.9.2"):
+#raw_version = gr.version()
+#clean_version = re.match(r'(\d+\.\d+\.\d+\.\d+|\d+\.\d+\.\d+)', raw_version).group(0)
+#if Version(clean_version) > Version("3.10.9.2"):
     _fll_threadsafe = True
 else:
     _fll_threadsafe = False
