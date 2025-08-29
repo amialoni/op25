@@ -4,3 +4,6 @@ build/
 op25/gr-op25_repeater/apps/html/*
 nohup.out
 op25/gr-op25_repeater/www/images/*
+*.m3u8
+*.ts
+op25/gr-op25_repeater/www/images/*.png
