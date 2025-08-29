@@ -14,8 +14,9 @@ if [[ "$1" == "-s" ]]; then
 fi
 RTL_DEV="rtl=0"
 RTL_FRQ="867.475e6"
-RTL_PPM="-3"
+RTL_PPM="-4"
 RTL_GAIN="30"
+M3U_PATH="../www/www-static/op25.m3u8"
 
 # Start OP25 receiver
 set -x
@@ -31,12 +32,12 @@ set +x
 sleep 1
 
 # Stream to browser via HLS
-mkdir -p  ../www/www-static/html
+#mkdir -p  ../www/www-static/html
 #sudo python3 -m http.server 8081 &
 ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
   -c:a aac -b:a 64k \
   -f hls -hls_time 5 -hls_list_size 12 -hls_flags delete_segments \
-  ../www/www-static/op25.m3u8 &
+  "$M3U_PATH" &
 
 #ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
 #-c:a aac -b:a 64k \
