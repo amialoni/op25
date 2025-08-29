@@ -5,6 +5,7 @@ cd ~/op25/op25/gr-op25_repeater/apps/
 pkill -f rx.py || true
 pkill -f ffmpeg || true
 pkill -f http.server || true
+pkill -f httpserver || true
 sleep 2
 rtl_test -t
 # Stop flag
@@ -12,6 +13,11 @@ if [[ "$1" == "-s" ]]; then
     echo "Stopped OP25, FFmpeg and HTTP server."
     exit 0
 fi
+if [[ "$1" == "-c" ]]; then
+    rm -f html/*
+    exit 0
+fi
+
 
 RTL_DEV="rtl=0"
 RTL_FRQ="867.475e6"
@@ -34,15 +40,21 @@ sleep 1
 
 # Stream to browser via HLS
 mkdir -p  html
-python3 -m http.server 8081 &
+#python3 -m http.server 8081 &
+python3 httpserver.py &
+
+ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
+ -c:a aac -b:a 64k \
+ -f hls -hls_time 5 -hls_list_size 12 -hls_flags delete_segments \
+ html/op25.m3u8 &
 
 
-ffmpeg -re -thread_queue_size 512 \
--f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
--f lavfi -i aevalsrc=0:d=1740:s=8000 \
--filter_complex "[0:a][1:a]amix=inputs=2:dropout_transition=9999[aout]" \
--map "[aout]" -c:a aac -b:a 64k \
--f tee "[f=hls:hls_time=1740:hls_list_size=0:hls_flags=append_list+omit_endlist]html/op25.m3u8|[f=segment:segment_time=1740:reset_timestamps=1]html/op25_%03d.ts" &
+# ffmpeg -re -thread_queue_size 512 \
+# -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
+# -f lavfi -i aevalsrc=0:d=1740:s=8000 \
+# -filter_complex "[0:a][1:a]amix=inputs=2:dropout_transition=9999[aout]" \
+# -map "[aout]" -c:a aac -b:a 64k \
+# -f tee "[f=hls:hls_time=1740:hls_list_size=0:hls_flags=append_list+omit_endlist]html/op25.m3u8|[f=segment:segment_time=1740:reset_timestamps=1]html/op25_%03d.ts" &
 
 #ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
 #  -c:a aac -b:a 64k \

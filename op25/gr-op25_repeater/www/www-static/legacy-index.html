@@ -234,6 +234,7 @@
   const domain = window.location.hostname;
   const newPort = "8081";
   const iframeSrc = `${protocol}//${domain}:${newPort}/audio.html`;
+  console.log(iframeSrc);
   document.getElementById("myIframe").src = iframeSrc;
 </script>
 </body>
