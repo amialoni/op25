@@ -31,12 +31,12 @@ set +x
 sleep 1
 
 # Stream to browser via HLS
-mkdir -p  html
-sudo python3 -m http.server 8081 &
-#ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
-#  -c:a aac -b:a 64k \
-#  -f hls -hls_time 5 -hls_list_size 12 -hls_flags delete_segments \
-#  /srv/www/myradio.tovmeod.com/op25/op25.m3u8 &
+mkdir -p  ../www/www-static/html
+#sudo python3 -m http.server 8081 &
+ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
+  -c:a aac -b:a 64k \
+  -f hls -hls_time 5 -hls_list_size 12 -hls_flags delete_segments \
+  ../www/www-static/op25.m3u8 &
 
 #ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
 #-c:a aac -b:a 64k \
@@ -50,12 +50,12 @@ sudo python3 -m http.server 8081 &
 #-map "[aout]" \
 #-f tee "[f=hls:hls_time=5:hls_list_size=0:hls_flags=append_list+omit_endlist:c=aac:b:a=64k]html/op25.m3u8|[f=segment:segment_time=1740:reset_timestamps=1:c=libmp3lame:b:a=64k]html/op25_%03d.mp3" &
 
-ffmpeg -re -thread_queue_size 512 \
--f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
--f lavfi -i aevalsrc=0:d=1740:s=8000 \
--filter_complex "[0:a][1:a]amix=inputs=2:dropout_transition=9999[aout]" \
--map "[aout]" -c:a aac -b:a 64k \
--f tee "[f=hls:hls_time=1740:hls_list_size=0:hls_flags=append_list+omit_endlist]html/op25.m3u8|[f=segment:segment_time=1740:reset_timestamps=1]html/op25_%03d.ts" &
+#ffmpeg -re -thread_queue_size 512 \
+#-f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
+#-f lavfi -i aevalsrc=0:d=1740:s=8000 \
+#-filter_complex "[0:a][1:a]amix=inputs=2:dropout_transition=9999[aout]" \
+#-map "[aout]" -c:a aac -b:a 64k \
+#-f tee "[f=hls:hls_time=1740:hls_list_size=0:hls_flags=append_list+omit_endlist]../www/www-static/html/op25.m3u8|[f=segment:segment_time=1740:reset_timestamps=1]html/op25_%03d.ts" &
 
 # ffmpeg -re -thread_queue_size 512 \
 # -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
