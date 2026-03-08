@@ -11,8 +11,21 @@ if [[ "$1" == "-s" ]]; then
     echo "Stopped OP25 and FFmpeg."
     exit 0
 fi
-last_octet=$(ip -br a | grep wlp1s0 | awk '{print $3}' | cut -d'.' -f4 | cut -d'/' -f1)
-echo "ip=$last_octet"
+# Try to get the last octet from enp device
+last_octet=$(ip -br a | grep '^enp.*[0-9]\s\+UP' | awk '{print $3}' | cut -d'.' -f4 | cut -d'/' -f1)
+
+# If no enp device with UP status is found, try wlp device
+if [ -z "$last_octet" ]; then
+    last_octet=$(ip -br a | grep '^wlp.*[0-9]\s\+UP' | awk '{print $3}' | cut -d'.' -f4 | cut -d'/' -f1)
+fi
+
+# Check if last_octet is empty (no matching device found)
+if [ -z "$last_octet" ]; then
+    echo "No device starting with 'enp' or 'wlp' found with an IP address and UP status."
+    exit 1
+fi
+
+echo "ip=$last_octet <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
 case $last_octet in
     8|10)
         echo "Last octet is $last_octet. Performing action for 8 or 10..."
@@ -36,8 +49,8 @@ case $last_octet in
         echo "Last octet is 185. Performing action for 185..."
 	RTL_DEV="rtl=0"
 	RTL_FRQ="867.475e6"
-	RTL_PPM="-4"
-	RTL_GAIN="30"
+	RTL_PPM="-22"
+	RTL_GAIN="37"
 	M3U_PATH="../www/www-static/op25.m3u8"
         # Add your action here, e.g., touch /tmp/octet_185
         ;;
@@ -52,12 +65,13 @@ case $last_octet in
 esac
 
 # Start OP25 receiver
+#    -q "$RTL_PPM" -o 500 \
 set -x
 ./rx.py --nocrypt \
     --args "$RTL_DEV" \
     --gains "lna:$RTL_GAIN" \
-    -S 2400000 \
-    -q "$RTL_PPM" -o 500 \
+    -o 500 -S 2400000 \
+    -q "$RTL_PPM"  \
     -d 0 -v 1 -2 -f "$RTL_FRQ" \
     -X -V -w \
     -l http:0.0.0.0:8080 &
@@ -69,7 +83,7 @@ sleep 1
 #sudo python3 -m http.server 8081 &
 ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
   -c:a aac -b:a 64k \
-  -f hls -hls_time 5 -hls_list_size 12 -hls_flags delete_segments \
+  -f hls -hls_time 10 -hls_list_size 12 -hls_flags delete_segments \
   "$M3U_PATH" &
 
 #ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \

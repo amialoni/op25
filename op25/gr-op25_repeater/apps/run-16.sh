@@ -2,9 +2,15 @@
 cd ~/op25/op25/gr-op25_repeater/apps/
 
 # Kill old processes
-pkill -f rx.py || true
-pkill -f ffmpeg || true
-pkill -f http.server || true
+sudo pkill -f rx.py || true
+sudo pkill -f ffmpeg || true
+sudo pkill -f http.server || true
+# Check if -kill parameter is provided
+if [[ "$1" == "-kill" ]]; then
+    echo "Kill parameter detected. Exiting script."
+    exit 0
+fi
+
 sleep 1
 rtl_test -t
 # Stop flag
@@ -36,8 +42,12 @@ RTL_GAIN="30"
 sleep 5
 
 # Stream to browser via HLS
-mkdir -p  /srv/www/myradio.tovmeod.com/op25
-mkdir -p  html
+#mkdir -p  /srv/www/myradio.tovmeod.com/op25
+#mkdir -p  html
+#cd  /srv/www/myradio.tovmeod.com/op25/html
+#cd  html
+cd /home/sefi/op25/op25/gr-op25_repeater/www/www-static
+
 sudo python3 -m http.server 8081 &
 #ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
 #  -c:a aac -b:a 64k \
@@ -47,7 +57,7 @@ sudo python3 -m http.server 8081 &
 ffmpeg -re -f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
 -c:a aac -b:a 64k \
 -f hls -hls_time 5 -hls_list_size 52 -hls_flags delete_segments+append_list \
- html/op25.m3u8 &
+ op25.m3u8 &
 
 #ffmpeg -re -thread_queue_size 512 \
 #-f s16le -ar 8000 -ac 1 -i udp://127.0.0.1:23456 \
